@@ -8,6 +8,8 @@ import { PrismaModule } from './prisma/prisma.module';
 import { ConfigModule } from '@nestjs/config';
 import { MailModule } from './mail/mail.module';
 import { UserModule } from './user/user.module';
+import { TgbotModule } from './tgbot/tgbot.module';
+import { EskizService } from './eskiz/eskiz.service';
 
 @Module({
   imports: [
@@ -20,8 +22,9 @@ import { UserModule } from './user/user.module';
     PrismaModule,
     MailModule,
     UserModule,
+    TgbotModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, EskizService],
 })
 export class AppModule {}

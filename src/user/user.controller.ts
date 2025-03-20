@@ -35,7 +35,7 @@ export class UserController {
   }
 
   @UseGuards(AuthGuard)
-  @Get('session:id')
+  @Delete('session:id')
   delSession(@Req() req: Request, @Param('id') id: string) {
     return this.userService.delSession(req, id);
   }

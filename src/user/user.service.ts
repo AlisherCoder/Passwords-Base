@@ -5,7 +5,6 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { Request } from 'express';
-import { RefreshTokenDto } from 'src/auth/dto/create-auth.dto';
 import { UpdateAuthDto } from 'src/auth/dto/update-auth.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 
@@ -15,7 +14,10 @@ export class UserService {
 
   async findAll() {
     try {
-      let data = await this.prisma.user.findMany();
+      let data = await this.prisma.user.findMany({ where: { role: 'USER' } });
+      if (!data.length) {
+        return new NotFoundException('Not found users');
+      }
       return { data };
     } catch (error) {
       return new BadRequestException(error.message);
@@ -75,7 +77,11 @@ export class UserService {
         return new UnauthorizedException('Unauthorized');
       }
 
-      let data = await this.prisma.user.findFirst({ where: { id: user.id } });
+      let data = await this.prisma.user.findFirst({
+        where: { id: user.id },
+        include: { Password: true },
+      });
+
       return { data };
     } catch (error) {
       return new BadRequestException(error.message);
