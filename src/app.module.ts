@@ -10,6 +10,8 @@ import { MailModule } from './mail/mail.module';
 import { UserModule } from './user/user.module';
 import { TgbotModule } from './tgbot/tgbot.module';
 import { EskizService } from './eskiz/eskiz.service';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 
 @Module({
   imports: [
@@ -23,6 +25,10 @@ import { EskizService } from './eskiz/eskiz.service';
     MailModule,
     UserModule,
     TgbotModule,
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'uploads'),
+      serveRoot: '/file',
+    }),
   ],
   controllers: [AppController],
   providers: [AppService, EskizService],

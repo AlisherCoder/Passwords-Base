@@ -7,6 +7,8 @@ import {
 import { Request } from 'express';
 import { UpdateAuthDto } from 'src/auth/dto/update-auth.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
+import * as path from 'path';
+import * as fs from 'fs';
 
 @Injectable()
 export class UserService {
@@ -48,6 +50,13 @@ export class UserService {
         where: { id },
       });
 
+      if (updateUserDto.image) {
+        let oldimage = path.join('uploads', user.image);
+        try {
+          fs.unlinkSync(oldimage);
+        } catch (error) {}
+      }
+
       return { data };
     } catch (error) {
       return new BadRequestException(error.message);
@@ -56,10 +65,18 @@ export class UserService {
 
   async remove(id: string) {
     try {
-      let data = await this.prisma.user.delete({ where: { id } });
+      await this.prisma.password.deleteMany({ where: { userId: id } });
+
+      let data = await this.prisma.user.delete({ where: { id: id } });
       if (!data) {
         return new NotFoundException('Not found data');
       }
+
+      let oldimage = path.join('uploads', data.image);
+      try {
+        fs.unlinkSync(oldimage);
+      } catch (error) {}
+
       return { data };
     } catch (error) {
       return new BadRequestException(error.message);
